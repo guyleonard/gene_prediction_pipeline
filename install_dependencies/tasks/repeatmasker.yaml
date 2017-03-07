@@ -1,0 +1,62 @@
+- include_vars: "{{playbook_dir}}/repbase_password.yaml"
+
+- name: Download RepeatMasker Repbase Library
+  get_url:
+    url: "http://www.girinst.org/server/RepBase/protected/repeatmaskerlibraries/repeatmaskerlibraries-20160829.tar.gz"
+    url_username: guyleonard
+    url_password: "{{repbase_password}}"
+    force_basic_auth: yes
+    dest: "{{source_dir}}/repeatmaskerlibraries-20160829.tar.gz"
+
+- name: Download RepeatMasker {{version}}
+  get_url:
+    url="http://www.repeatmasker.org/RepeatMasker-open-{{version}}.tar.gz"
+    dest="{{source_dir}}/RepeatMasker-open-{{version}}.tar.gz"
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
+  retries: 5
+  delay: 10
+
+- name: Uncompress RepeatMasker {{version}}
+  unarchive:
+    src="{{source_dir}}/RepeatMasker-open-{{version}}.tar.gz"
+    dest="{{software_dir}}"
+    copy=no
+    creates="{{software_dir}}/RepeatMasker/INSTALL"
+
+- name: Uncompress Repbase Libraries
+  unarchive:
+    src="{{source_dir}}/repeatmaskerlibraries-20160829.tar.gz"
+    dest="{{software_dir}}/RepeatMasker"
+    copy=no
+    creates="{{software_dir}}/RepeatMasker/Libraries/README"
+
+- name: Changing root user:group to cs02gl:cs02gl
+  file: path="{{software_dir}}/RepeatMasker" owner=cs02gl group=cs02gl recurse=yes
+
+# needs command input - got to do this one yourself for now
+#- name: Configure RepeatMasker
+#  shell: perl ./configure
+#  args:
+#    chdir: "{{software_dir}}/RepeatMasker/"
+
+- name: Linking DupMasker
+  file: src="{{software_dir}}/RepeatMasker/DupMasker" dest=/usr/local/bin/DupMasker state=link
+
+- name: Linking RepeatProteinMask
+  file: src="{{software_dir}}/RepeatMasker/RepeatProteinMask" dest=/usr/local/bin/DupMasker state=link
+
+- name: Linking ProcessRepeats
+  file: src="{{software_dir}}/RepeatMasker/ProcessRepeats" dest=/usr/local/bin/ProcessRepeats state=link
+
+- name: Linking DateRepeats
+  file: src="{{software_dir}}/RepeatMasker/DateRepeats" dest=/usr/local/bin/DateRepeats state=link
+
+- name: Linking DupMasker
+  file: src="{{software_dir}}/RepeatMasker/RepeatMasker" dest=/usr/local/bin/RepeatMasker state=link
+
+
+# This program is included for my own use, they hide it behind a web-download CGI button
+# and some non-standard "licence" terms. Super annoying in 2016. Super annoying in 1999.
+- name: Copy TRF to /usr/loca/bin
+  copy: src="{{playbook_dir}}/external_programs/trf409.linux64" dest=/usr/local/bin/trf mode=0755

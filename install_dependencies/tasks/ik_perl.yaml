@@ -1,0 +1,21 @@
+- name: Cloning KorfLab Perl_utils
+  git: repo=https://github.com/KorfLab/Perl_utils.git dest="{{source_dir}}/Perl_utils" clone=yes update=yes
+
+- name: Installing Perl Modules
+  copy:
+    src: "{{item}}"
+    dest: /usr/lib/perl5
+    mode: 0644
+  with_fileglob:
+    - "{{source_dir}}/Perl_utils/*.pm"
+
+- name: Installing Perl Scripts
+  copy:
+    src: "{{item}}"
+    dest: /usr/local/bin
+    mode: 0755
+  with_fileglob:
+    - "{{source_dir}}/Perl_utils/*.pl"
+
+- name: Changing root user:group to cs02gl:cs02gl
+  file: path="{{source_dir}}/Perl_utils" owner=cs02gl group=cs02gl recurse=yes

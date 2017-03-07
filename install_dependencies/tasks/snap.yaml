@@ -1,0 +1,42 @@
+- name: Downloading SNAP v{{version}}
+  get_url: url="http://korflab.ucdavis.edu/Software/snap-{{version}}.tar.gz" dest="{{source_dir}}/snap-{{version}}.tar.gz"
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
+  retries: 5
+  delay: 10
+
+- name: Uncompress SNAP v{{version}}
+  unarchive:
+    src="{{source_dir}}/snap-{{version}}.tar.gz"
+    dest="{{software_dir}}"
+    copy=no
+    creates="{{software_dir}}/snap/LICENSE"
+
+- name: SNAP - Running make
+  make: chdir="{{software_dir}}/snap"
+
+- name: Linking snap
+  file: src="{{software_dir}}/snap/snap" dest=/usr/local/bin/snap state=link
+
+- name: Linking fathom
+  file: src="{{software_dir}}/snap/fathom" dest=/usr/local/bin/fathom state=link
+
+- name: Linking forge
+  file: src="{{software_dir}}/snap/forge" dest=/usr/local/bin/forge state=link
+
+- name: Linking hmm-info
+  file: src="{{software_dir}}/snap/hmm-info" dest=/usr/local/bin/hmm-info state=link
+
+- name: Linking exonpairs
+  file: src="{{software_dir}}/snap/exonpairs" dest=/usr/local/bin/exonpairs state=link
+
+- name: Installing Scripts
+  copy:
+    src: "{{item}}"
+    dest: /usr/local/bin
+    mode: 0755
+  with_fileglob:
+    - "{{software_dir}}/snap/*.pl"
+
+- name: Changing root user:group to cs02gl:cs02gl
+  file: path="{{software_dir}}/snap" owner=cs02gl group=cs02gl recurse=yes

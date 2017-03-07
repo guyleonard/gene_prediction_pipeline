@@ -1,0 +1,49 @@
+- hosts: all
+  vars:
+    - source_dir: /home/cs02gl/programs/.source
+    - software_dir: /home/cs02gl/programs
+
+  pre_tasks:
+    - name: Create Software Dir
+      file: path={{software_dir}} state=directory
+    - name: Create Software Source Dir
+      file: path={{source_dir}} state=directory
+
+  tasks:
+    ## SNAP and Perl_libs
+    - include: tasks/snap.yaml version=2013-11-29
+      tags: snap
+    - include: tasks/ik_perl.yaml
+      tags: perl
+
+
+    ## GENEMARK
+    - include: tasks/genemark.yaml
+      tags: genemark
+
+
+    ## MAKER
+    # RMBLAST
+    - include: tasks/rmblast.yaml
+      tags: repeatmasker, rmblast, maker
+    
+    # REPEATMASKER
+    - include: tasks/repeatmasker.yaml version=4-0-6
+      tags: repeatmasker, maker
+
+    # HMMER
+    - include: tasks/hmmer.yaml version=3.1b2
+      tags: hmmer, repeatmasker, maker
+
+    # EXONERATE
+    - include: tasks/exonerate.yaml
+      tags: exonerate, maker
+
+    # MAKER
+    - include: tasks/maker.yaml
+      tags: maker
+
+
+    ## AUGUSTUS
+    - include: tasks/augustus.yaml
+      tags: augustus

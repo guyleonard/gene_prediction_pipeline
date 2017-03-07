@@ -1,0 +1,21 @@
+- name: Downloading HMMER v{{version}}
+  get_url: url="http://eddylab.org/software/hmmer3/{{version}}/hmmer-{{version}}-linux-intel-x86_64.tar.gz" dest="{{source_dir}}/hmmer-{{version}}-linux-intel-x86_64.tar.gz"
+
+- name: Uncompress HMMER
+  unarchive: 
+    src="{{source_dir}}/hmmer-{{version}}-linux-intel-x86_64.tar.gz"
+    dest="{{software_dir}}"
+    copy=no
+    creates="{{software_dir}}/hmmer-{{version}}-linux-intel-x86_64/binaries/hmmer"
+
+- name: Installing HMMER
+  copy:
+    src: "{{item}}"
+    dest: /usr/local/bin
+    mode: 0755
+  with_fileglob:
+    - "{{software_dir}}/hmmer-{{version}}-linux-intel-x86_64/binaries/*"
+
+- name: Changing root user:group to cs02gl:cs02gl
+  file: path="{{software_dir}}/hmmer-{{version}}-linux-intel-x86_64" owner=cs02gl group=cs02gl recurse=yes
+

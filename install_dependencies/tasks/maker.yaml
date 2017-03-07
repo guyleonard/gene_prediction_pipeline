@@ -1,0 +1,74 @@
+- name: Install Dependencies from CPAN
+  cpanm: name={{item}}
+  with_items:
+    - Bio::Perl
+    - Bit::Vector
+    - DBD::SQLite
+    - DBI
+    - Error
+    - Error::Simple
+    - File::NFSLock
+    - File::Which
+    - forks
+    - forks::shared
+    - Inline
+    - Inline::C
+    - IO::All
+    - IO::Prompt
+    - Perl::Unsafe::Signals
+    - PerlIO::gzip
+    - Proc::ProcessTable
+    - Proc::Simple
+    - threads
+    - URI::Escape
+
+- name: Install Dependencies from Apt
+  apt: name={{item}}
+  with_items:
+    - ncbi-blast+
+    - ncbi-blast+-legacy
+
+- name: Download MAKER
+  get_url:
+    url="http://yandell.topaz.genetics.utah.edu/maker_downloads/8AB0/DB9A/F7F4/3DE5C1FC9204F76F8491CC138C45/maker-2.31.8.tgz"
+    dest="{{source_dir}}/maker-2.31.8.tgz"
+    force_basic_auth=yes
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
+  retries: 5
+  delay: 10
+
+- name: Uncompress MAKER
+  unarchive:
+    src="{{source_dir}}/maker-2.31.8.tgz"
+    dest="{{software_dir}}"
+    copy=no
+    creates="{{software_dir}}/maker/INSTALL"
+
+- name: configure
+  shell: perl Build.PL
+  args:
+    chdir: "{{software_dir}}/maker/src"
+
+- name: build install
+  shell: ./Build install
+  args:
+    chdir: "{{software_dir}}/maker/src"
+
+- name: Installing Maker binaries
+  file:
+    src: "{{software_dir}}/maker/bin/{{item}}"
+    dest: "/usr/local/bin/{{item}}"
+    state: link
+  with_lines: ls "{{software_dir}}/maker/bin/"
+
+- name: Installing Maker Libraries
+  file:
+    src: "{{software_dir}}/maker/lib/{{item}}"
+    dest: "/usr/local/lib/{{item}}"
+    state: link
+  with_lines: ls "{{software_dir}}/maker/lib/"
+  ignore_errors: yes
+
+- name: Changing root user:group to cs02gl:cs02gl
+  file: path="{{software_dir}}/maker" owner=cs02gl group=cs02gl recurse=yes

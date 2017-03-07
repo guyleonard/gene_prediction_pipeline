@@ -1,0 +1,23 @@
+- name: Download RMBlast
+  get_url:
+    url="ftp://ftp.ncbi.nlm.nih.gov/blast/executables/rmblast/2.2.28/ncbi-rmblastn-2.2.28-x64-linux.tar.gz"
+    dest="{{source_dir}}/ncbi-rmblastn-2.2.28-x64-linux.tar.gz"
+    force_basic_auth=yes
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
+  retries: 5
+  delay: 10
+
+- name: Uncompress RMBlast
+  unarchive:
+    src="{{source_dir}}/ncbi-rmblastn-2.2.28-x64-linux.tar.gz"
+    dest="{{software_dir}}"
+    copy=no
+    creates="{{software_dir}}/ncbi-rmblastn-2.2.28/LICENSE"
+
+- name: Copy rmblastn to /usr/bin
+  copy: src="{{software_dir}}/ncbi-rmblastn-2.2.28/bin/rmblastn" dest=/usr/local/bin/rmblastn mode=0755
+
+- name: Changing root user:group to cs02gl:cs02gl
+  file: path="{{software_dir}}/ncbi-rmblastn-2.2.28" owner=cs02gl group=cs02gl recurse=yes
+

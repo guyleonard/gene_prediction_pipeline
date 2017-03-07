@@ -1,0 +1,27 @@
+- name: Download Exonerate
+  get_url:
+    url="http://ftp.ebi.ac.uk/pub/software/vertebrategenomics/exonerate/exonerate-2.2.0-x86_64.tar.gz"
+    dest="{{source_dir}}/exonerate-2.2.0-x86_64.tar.gz"
+    force_basic_auth=yes
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
+  retries: 5
+  delay: 10
+
+- name: Uncompress Exonerate
+  unarchive:
+    src="{{source_dir}}/exonerate-2.2.0-x86_64.tar.gz"
+    dest="{{software_dir}}"
+    copy=no
+    creates="{{software_dir}}/exonerate-2.2.0-x86_64/bin/exonerate"
+
+- name: Installing Exonerate
+  copy:
+    src: "{{item}}"
+    dest: /usr/local/bin
+    mode: 0755
+  with_fileglob:
+    - "{{software_dir}}/exonerate-2.2.0-x86_64/bin/*"
+
+- name: Changing root user:group to cs02gl:cs02gl
+  file: path="{{software_dir}}/exonerate-2.2.0-x86_64/" owner=cs02gl group=cs02gl recurse=yes

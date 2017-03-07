@@ -1,0 +1,43 @@
+- name: Downloading Augustus
+  get_url: url="http://bioinf.uni-greifswald.de/augustus/binaries/augustus.current.tar.gz" dest="{{source_dir}}/augustus.current.tar.gz"
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
+  retries: 5
+  delay: 10
+
+- name: Install Apt Dependencies
+  apt: name="{{item}}" state=present
+  with_items:
+    - libboost-iostreams-dev
+    - zlib1g-dev
+    - bamtools
+    - libbamtools-dev
+
+- name: Uncompress Augusuts
+  unarchive:
+    src="{{source_dir}}/augustus.current.tar.gz"
+    dest="{{software_dir}}"
+    copy=no
+    creates="{{software_dir}}/augustus-3.2.2/README.TXT"
+
+- name: SNAP - Running make
+  make: chdir="{{software_dir}}/augustus-3.2.2"
+
+- name: SNAP - Running make install
+  make: chdir="{{software_dir}}/augustus-3.2.2" target=install
+
+- name: Installing Augustus Scripts
+  file:
+    src: "{{software_dir}}/augustus-3.2.2/scripts/{{item}}"
+    dest: "/usr/local/bin/{{item}}"
+    state: link
+  with_lines: ls "{{software_dir}}/augustus-3.2.2/scripts"
+
+- name: Add export AUGUSTUS_CONFIG_PATH
+  shell: "export AUGUSTUS_CONFIG_PATH={{software_dir}}/augustus-3.2.2/config"
+
+- name: Adding AUGUSTUS_CONFIG_PATH to .bashrc
+  lineinfile: dest=/home/cs02gl/.bashrc line="export AUGUSTUS_CONFIG_PATH={{software_dir}}/augustus-3.2.2/config" backup=yes
+
+- name: Changing root user:group to cs02gl:cs02gl
+  file: path="{{software_dir}}/augustus-3.2.2" owner=cs02gl group=cs02gl recurse=yes

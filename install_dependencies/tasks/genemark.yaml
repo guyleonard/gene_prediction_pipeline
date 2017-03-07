@@ -1,0 +1,42 @@
+- name: Downloading GeneMark-ES / ET v.4.32
+  get_url: url=http://topaz.gatech.edu/GeneMark/tmp/GMtool_QHwSL/gm_et_linux_64.tar.gz dest="{{source_dir}}/gm_et_linux_64.tar.gz"
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
+  retries: 5
+  delay: 10
+
+- name: Downloading GeneMark-ES / ET v.4.32 License Key
+  get_url: url=http://topaz.gatech.edu/GeneMark/tmp/GMtool_QHwSL/gm_key_64.gz dest="{{source_dir}}/gm_key_64.gz"
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
+  retries: 5
+  delay: 10
+
+- name: Uncompress GeneMark
+  unarchive:
+    src="{{source_dir}}/gm_et_linux_64.tar.gz"
+    dest="{{software_dir}}"
+    copy=no
+    creates="{{software_dir}}/gm_et_linux_64/gmes_petap/INSTALL"
+
+- name: Uncompress GeneMark License
+  shell: gunzip gm_key_64.gz
+  args:
+    chdir: "{{source_dir}}"
+  ignore_errors: yes
+
+- name: Copy License to User
+  copy: src="{{source_dir}}/gm_key_64" dest=/home/cs02gl/.gm_key owner=cs02gl group=cs02gl
+
+- name: Changing root user:group to cs02gl:cs02gl
+  file: path="{{software_dir}}/gm_et_linux_64/" owner=cs02gl group=cs02gl recurse=yes
+
+- name: Making Sure cpanminus is Installed
+  apt: name=cpanminus state=present
+
+- name: Installing Perl Dependencies
+  cpanm: name={{item}}
+  with_items:
+    - Logger::Simple
+    - Hash::Merge
+    - Parallel::ForkManager
