@@ -34,8 +34,11 @@ Your username is in the repeatmasker.yaml taskbook.
 ### rmblast
 rmblast won't currently download with Ansible 2.1.1.0 as there's something up with ftp downloads, so you will have to manually download it yourself and place it in the .source dir.!?
 
+### trf
+You have to click a ridiculous web form button to get an in-browser download. What is this the '90s? In the meantime, I will just distribute the file here. (╯°□°)╯︵ ┻━┻
+
 ### genemark
-Another case of outdated software download models. You have to fill in a web form, agree to a non-standard licence and then get given a temporary download location. $&\*! This bad, bad practice has got to stop. It is not 1996 anymore. Crikey.
+Yet another case of seriously outdated and pointless software download/license models. You have to fill in a web form, agree to a non-standard licence and then get given a temporary download location. $&\*! This bad, bad practice has got to stop. It is not 1996 anymore. Crikey.
 
 ## Other Dependencies
 1. [pigz](http://zlib.net/pigz/) - Parallel GZIP
