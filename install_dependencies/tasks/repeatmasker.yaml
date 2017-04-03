@@ -2,7 +2,7 @@
 
 - name: Download RepeatMasker Repbase Library
   get_url:
-    url: "http://www.girinst.org/server/RepBase/protected/repeatmaskerlibraries/repeatmaskerlibraries-20160829.tar.gz"
+    url: "http://www.girinst.org/server/RepBase/protected/repeatmaskerlibraries/RepBaseRepeatMaskerEdition-20170127.tar.gz"
     url_username: guyleonard
     url_password: "{{repbase_password}}"
     force_basic_auth: yes

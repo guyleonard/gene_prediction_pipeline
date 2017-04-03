@@ -17,8 +17,9 @@ There are also tags so you can install one or many components in a go:
     ansible-playbook install_gene_prediction_dependencies.yaml --sudo -K -c local -i "localhost," --ask-vault-pass --tags repbase,hmmer
 
 ### RepeatMasker Libraries
-I have used ansible to install the dependencies for this workflow. RepeatMasker libraries require the user to obtain a username and password for access to [Repbase](http://www.girinst.org/repbase/), it is stored in an ansible 'vault' file.
-This file is also password protected, so the RepeatMasker install will not work for any user of this repo, you will need to make your own vault, containing your own password
+RepeatMasker libraries require the user to obtain a username and password for access to [Repbase](http://www.girinst.org/repbase/). You should do this now, and make sure you also update the download link in the repeatmasker.yaml - unfortunately RepBase do not seem to keep links to previous version live - I despair.
+
+For ansible installation the password is stored in an ansible 'vault' file. This file is also password protected, so the RepeatMasker install will not work for any external users of this repo, therefore you will need to make your own vault, containing your own password
 with this command:
 
     ansible-vault create repbase_password.yml
@@ -30,6 +31,8 @@ and add your password like so:
 ```
 
 Your username is in the repeatmasker.yaml taskbook.
+
+
 
 ### rmblast
 rmblast won't currently download with Ansible 2.1.1.0 as there's something up with ftp downloads, so you will have to manually download it yourself and place it in the .source dir.!?
