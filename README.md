@@ -4,6 +4,8 @@ A suggested workflow for predicting genes from the assembly of your favourite ge
 
 ![SAGA Workflow](https://github.com/guyleonard/single_cell_workflow/blob/master/images/gene_prediction.png)
 
+This really is just a suggestion and ths script is a little bit hard coded and messy - in need of a lot of update/reconfiguration if you want to use it.
+
 ## Install Dependencies
 
 An [Ansible]() playbook to install the software:
