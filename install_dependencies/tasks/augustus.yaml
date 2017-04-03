@@ -20,10 +20,10 @@
     copy=no
     creates="{{software_dir}}/augustus-3.2.2/README.TXT"
 
-- name: SNAP - Running make
+- name: Augustus - Running make
   make: chdir="{{software_dir}}/augustus-3.2.2"
 
-- name: SNAP - Running make install
+- name: Augustus - Running make install
   make: chdir="{{software_dir}}/augustus-3.2.2" target=install
 
 - name: Installing Augustus Scripts
