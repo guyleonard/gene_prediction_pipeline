@@ -45,6 +45,9 @@ You have to click a ridiculous web form button to get an in-browser download. Wh
 ### genemark
 Yet another case of seriously outdated and pointless software download/license models. You have to fill in a web form, agree to a non-standard licence and then get given a temporary download location. $&\*! This bad, bad practice has got to stop. It is not 1996 anymore. Crikey.
 
+### genemark
+It has a 400 day licence. After that you need to get a new one. :|
+
 ## Other Dependencies
 1. [pigz](http://zlib.net/pigz/) - Parallel GZIP
 2. tee - GNU Core
